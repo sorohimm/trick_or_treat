@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: balance_api
+    build:
+      context: ./..
+      dockerfile: deployments/Dockerfile
+    ports:
+      #- ${APPLICATION_PORT:-12342}:12342
+      - "8080:8080"
+    env_file:
+      - ../configs/config.env
+      - ../configs/api_config.env
+    networks:
+      - network
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: users_db
+    volumes:
+      - ../assets/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - network
+    restart: always
+
+  adminer:
+    image: adminer
+    container_name: api-adminer
+    restart: always
+    ports:
+      - ${ADMINER_PORT:-17860}:8080
+    networks:
+      - network
+    depends_on:
+      - postgres
+
+networks:
+  network:
+    driver: bridge
