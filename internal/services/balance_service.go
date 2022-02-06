@@ -22,6 +22,7 @@ type UserBalanceService struct {
 	DBHandler   interfaces.IDBHandler
 }
 
+//provide users balance
 func (s *UserBalanceService) GetUserBalance(uuid string, currency string) (models.User, error) {
 	conn, err := s.DBHandler.AcquireConn(context.Background())
 	if err != nil {
